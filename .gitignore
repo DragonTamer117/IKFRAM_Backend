@@ -3,6 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.properties
+*.yml
 
 ### STS ###
 .apt_generated
@@ -31,3 +33,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+**/src/resources/application.properties
+**/src/resources/application.yml
+**/src/java/config
+**/src/java/bikeShop
