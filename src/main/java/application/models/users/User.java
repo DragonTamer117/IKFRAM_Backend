@@ -2,9 +2,7 @@ package application.models.users;
 
 import application.enums.Role;
 import com.sun.istack.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +17,8 @@ import java.util.UUID;
 @Entity
 @Builder
 @Table(name = "users")
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -58,7 +57,7 @@ public class User implements UserDetails {
 
     @Column(name = "postal_code")
     private String postalCode;
-    
+
     @Column(name = "city")
     private String city;
 
