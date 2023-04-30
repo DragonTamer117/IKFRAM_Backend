@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +28,24 @@ public class UserSeeder implements CommandLineRunner {
     );
 
     private void createUsers() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
         for (List<Object> users: userList) {
             String email = (String) users.get(0);
             String password = (String) users.get(1);
             Role role = (Role) users.get(2);
-            Date dateOfBirth = (Date) users.get(3);
+            String dateOfBirthString = (String) users.get(3);
+
+            Date dateOfBirth = null;
+
+            if (!dateOfBirthString.isEmpty()) {
+                try {
+                    dateOfBirth = dateFormat.parse(dateOfBirthString);
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException("Invalid date format: " + dateOfBirthString);
+                }
+            }
+
             String firstName = (String) users.get(4);
             String middleName = (String) users.get(5);
             String lastName = (String) users.get(6);
@@ -38,6 +53,14 @@ public class UserSeeder implements CommandLineRunner {
             String houseNr = (String) users.get(8);
             String postalCode = (String) users.get(9);
             String city = (String) users.get(10);
+
+            firstName = firstName.isEmpty() ? null : firstName;
+            middleName = middleName.isEmpty() ? null : middleName;
+            lastName = lastName.isEmpty() ? null : lastName;
+            street = street.isEmpty() ? null : street;
+            houseNr = houseNr.isEmpty() ? null : houseNr;
+            postalCode = postalCode.isEmpty() ? null : postalCode;
+            city = city.isEmpty() ? null : city;
 
             User user = User.builder()
                     .email(email)
