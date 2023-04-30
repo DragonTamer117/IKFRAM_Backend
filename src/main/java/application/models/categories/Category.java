@@ -22,8 +22,8 @@ public class Category {
     @GeneratedValue
     private UUID id;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<StorageProduct> storages;
-
     private String name;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<StorageProduct> storageProducts;
 }
