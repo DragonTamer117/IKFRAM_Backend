@@ -42,4 +42,7 @@ public class Product {
     @JsonIdentityReference(alwaysAsId=true)
     @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     private Order order;
+
+    @Column(name = "imageUrl")
+    private String imageUrl;
 }
