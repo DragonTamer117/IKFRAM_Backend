@@ -20,7 +20,7 @@ public class StorageProductController {
     private final StorageProductService storageProductService;
     private final UserService userService;
 
-    @GetMapping("/findAll")
+    @GetMapping
     public List<StorageProduct> findAll() {
         return storageProductService.findAll().stream()
                 .map(storageProduct -> mapper.map(storageProduct, StorageProduct.class))
