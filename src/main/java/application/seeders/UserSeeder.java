@@ -22,8 +22,8 @@ public class UserSeeder implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final List<List<Object>> userList = List.of(
             List.of("guest@ebiknl.nl", "123456", Role.GUEST, "01-01-1990", "Gast", "", "", "", "", "123456", ""),
-            List.of("SysAdmin@users.com", "sysadmin", Role.SYS_ADMIN, "16-10-1950", "Sys", "", "Admin", "Longway", "1000", "1111ZZ", "FarAwayTown"),
-            List.of("DataAdmin@users.com", "dataAdmin", Role.DATA_ADMIN,"16-10-1900", "Data", "", "Boss", "Shortway", "1", "3333CC", "NearyTown"),
+            List.of("SysAdmin@users.com", "sysadmin", Role.MODERATOR, "16-10-1950", "Sys", "", "Admin", "Longway", "1000", "1111ZZ", "FarAwayTown"),
+            List.of("DataAdmin@users.com", "dataAdmin", Role.ADMIN,"16-10-1900", "Data", "", "Boss", "Shortway", "1", "3333CC", "NearyTown"),
             List.of("customer@users.com", "customer", Role.CUSTOMER, "16-10-1900", "Customer", "", "User", "MiddelWay", "100", "2222AA", "AnyTown")
     );
 
