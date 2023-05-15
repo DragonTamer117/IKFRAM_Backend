@@ -11,10 +11,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@CrossOrigin
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class SecurityConfigurationService implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(@NotNull CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:7700/")
+                .allowedOrigins("http://localhost:7700")
                 .allowedMethods("GET", "POST", "DELETE", "PUT")
                 .allowedHeaders("*")
                 .allowCredentials(true)
@@ -38,6 +40,8 @@ public class SecurityConfigurationService implements WebMvcConfigurer {
         http
                 .csrf()
                 .disable()
+                .cors()
+                .and()
                 .authorizeHttpRequests()
                 .antMatchers("/api/v1/auth/**")
                 .permitAll()
