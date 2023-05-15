@@ -12,16 +12,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:7700/")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
     private final AutoMapper mapper = new AutoMapper();
     private final CategoryService categoryService;
     private final UserService userService;
 
-    @CrossOrigin
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> find(@RequestHeader("Authorization") String bearerToken, @PathVariable("id") UUID id) {
         Category category = categoryService.findById(id);
@@ -33,7 +32,6 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @CrossOrigin
     @PostMapping
     public ResponseEntity<Category> create(@RequestHeader("Authorization") String bearerToken, @RequestBody CategoryDTO categoryDTO) {
         if (userService.isAllowedRole(bearerToken)) {
@@ -43,7 +41,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @CrossOrigin
+
     @GetMapping("/findAll")
     @CrossOrigin(origins = "http://localhost:7700")
     public ResponseEntity<List<CategoryDTO>> findAllCategories(@RequestHeader("Authorization") String bearerToken) {
