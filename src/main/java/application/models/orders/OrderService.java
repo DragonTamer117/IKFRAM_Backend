@@ -31,8 +31,10 @@ public class OrderService {
         return orderRepository.findAllByUserId(userId);
     }
 
-    public Order create(OrderDTO orderDTO, String token) {
-        User user = userService.getUser(token);
+    // TODO: products is null, because we don't build them along with the order. So products will always be null.
+    //  Change it so products is shown as a list of UUID's of products.
+    public Order create(OrderDTO orderDTO, String bearerToken) {
+        User user = userService.getUser(bearerToken);
         Order order = Order.builder()
                 .userId(user.getId())
                 .orderStatus(OrderStatus.ORDER_CONFIRMED)
@@ -45,5 +47,10 @@ public class OrderService {
         }
 
         return order;
+    }
+
+    public List<Order> findByUserId(String id) {
+        if (id.isEmpty()) return null;
+        return orderRepository.findAllByUserId(id);
     }
 }
