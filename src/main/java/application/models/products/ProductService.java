@@ -15,13 +15,14 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final StorageProductService storageProductService;
 
-    public void create(UUID productId, Order order) {
-        StorageProduct foundProduct = storageProductService.findById(productId).get();
+    public void create(UUID id, Order order) {
+        StorageProduct foundProduct = storageProductService.findById(id).get();
 
         Product product = Product.builder()
                 .name(foundProduct.getName())
                 .price(foundProduct.getPrice())
                 .category(foundProduct.getCategory())
+                .imageUrl(foundProduct.getImageUrl())
                 .order(order)
                 .build();
 
