@@ -5,7 +5,6 @@ import application.enums.OrderStatus;
 import application.models.products.ProductService;
 import application.models.users.User;
 import application.models.users.UserService;
-import com.zhaofujun.automapper.AutoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    private final AutoMapper mapper = new AutoMapper();
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final UserService userService;
