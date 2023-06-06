@@ -19,7 +19,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<List<User>> findAll(
+            @RequestHeader("Authorization") String bearerToken
+    ) {
         System.out.println("User: " + bearerToken);
         if (userService.isAllowedRole(bearerToken)) {
             var users = userService.findAll().stream()
