@@ -17,33 +17,25 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Order>> findAll(
             @RequestHeader("Authorization") String bearerToken
     ) {
-        if (userService.isAllowedRole(bearerToken) || userService.isCustomer(bearerToken)) {
-            if (userService.isAllowedRole(bearerToken)) {
-                return ResponseEntity.ok(orderService.findAll());
-            } else {
-                return ResponseEntity.ok(orderService.findAllCustomerOrders(bearerToken));
-            }
+        if (userService.isAllowedRole(bearerToken)) {
+            return ResponseEntity.ok(orderService.findAll());
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // TODO: Find orders of users, based on the id as PathVariable.
-    @GetMapping("/{id}")
-    public ResponseEntity<List<Order>> findAllByUserID(
-            @RequestHeader("Authorization") String bearerToken,
-            @PathVariable String id) {
-        if (userService.isAllowedRole(bearerToken) || userService.isCustomer(bearerToken)) {
-            return ResponseEntity.ok(orderService.findByUserId(id));
-        }
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    @GetMapping("/current")
+    public ResponseEntity<List<Order>> findAllOrdersOfCurrentUser(
+            @RequestHeader("Authorization") String bearerToken
+    ) {
+        return ResponseEntity.ok(orderService.findAllCustomerOrders(bearerToken));
     }
 
+    // TODO: When trying to create a order, maybe ask for an id of user. So that an admin can create an order for a user.
     @PostMapping
     public ResponseEntity<Order> create(
             @RequestHeader("Authorization") String bearerToken,
