@@ -61,6 +61,32 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // TODO: This is for later, when we change a User but the passwor does not go through the passwordEncoder.
+//    protected User updateUserAsAdmin(UUID id, UserDTO userDTO) {
+//        User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+//        User updatedUser = mapper.map(userDTO, User.class);
+//        Field[] fields = User.class.getDeclaredFields();
+//
+//        for (Field field : fields) {
+//            try {
+//                field.setAccessible(true);
+//                Object value = field.get(updatedUser);
+//                if (value != null) {
+//                    if (field.getName().equals("password")) {
+//                        String encodedPassword = passwordEncoder.encode((String) value);
+//                        field.set(user, encodedPassword);
+//                    } else {
+//                        field.set(user, value);
+//                    }
+//                }
+//            } catch (IllegalAccessException e) {
+//                System.out.println("User not found with id: " + id);
+//            }
+//        }
+//
+//        return userRepository.save(user);
+//    }
+
     protected User updateUser(UUID id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         User updatedUser = mapper.map(userDTO, User.class);
