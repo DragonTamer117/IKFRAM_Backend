@@ -8,6 +8,7 @@ import application.models.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class OrderService {
 
     public List<Order> findAllCustomerOrders(String bearerToken) {
         User user = userService.getUser(bearerToken);
-        String userId = user.getId().toString();
+        UUID userId = user.getId();
 
         return orderRepository.findAllByUserId(userId);
     }
@@ -35,6 +36,7 @@ public class OrderService {
         User user = userService.getUser(bearerToken);
         Order order = Order.builder()
                 .userId(user.getId())
+                .date(new Date())
                 .orderStatus(OrderStatus.ORDER_CONFIRMED)
                 .build();
 
@@ -45,10 +47,5 @@ public class OrderService {
         }
 
         return order;
-    }
-
-    public List<Order> findByUserId(String id) {
-        if (id.isEmpty()) return null;
-        return orderRepository.findAllByUserId(id);
     }
 }
