@@ -1,8 +1,10 @@
 package application.models.users;
 
 import application.dtos.UserDTO;
+import application.enums.Role;
 import com.zhaofujun.automapper.AutoMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +36,23 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> find(@RequestHeader("Authorization") String bearerToken, @PathVariable UUID id) {
+    public ResponseEntity<User> find(
+            @RequestHeader("Authorization") String bearerToken,
+            @PathVariable UUID id
+    ) {
         if (userService.isAllowedRole(bearerToken)) {
             return ResponseEntity.ok(userService.findById(id));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    // TODO: Small changes needed, such as verification and other things that can be discussed.
+    @GetMapping("/current")
+    public ResponseEntity<User> getCurrentUser(
+            @RequestHeader("Authorization") String bearerToken
+    ) {
+        return ResponseEntity.ok(userService.getUser(bearerToken));
     }
 
     @PostMapping
