@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
@@ -25,6 +26,11 @@ public class StorageProductController {
         return storageProductService.findAll().stream()
                 .map(storageProduct -> mapper.map(storageProduct, StorageProduct.class))
                 .collect(toList());
+    }
+
+    @GetMapping("/{id}")
+    public StorageProduct findById(@PathVariable UUID id) {
+        return storageProductService.findById(id).get();
     }
 
     @PostMapping
