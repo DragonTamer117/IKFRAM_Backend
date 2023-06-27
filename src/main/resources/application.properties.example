@@ -18,3 +18,5 @@ server.error.whitelabel.enabled=false
 
 # Give a secret key of at least 64 char.
 SECRET.KEY=
+MAIL.USERNAME=
+MAIL.PASSWORD=
