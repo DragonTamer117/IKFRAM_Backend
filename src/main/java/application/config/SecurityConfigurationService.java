@@ -48,6 +48,8 @@ public class SecurityConfigurationService implements WebMvcConfigurer {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/storageProducts")
                 .permitAll()
+                .antMatchers("/api/v1/users/generate/password")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

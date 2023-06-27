@@ -1,10 +1,9 @@
 package application.models.users;
 
 import application.dtos.UserDTO;
-import application.enums.Role;
+import application.services.PasswordService;
 import com.zhaofujun.automapper.AutoMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 public class UserController {
     private final AutoMapper mapper = new AutoMapper();
     private final UserService userService;
+    private final PasswordService passwordService;
 
     @GetMapping
     public ResponseEntity<List<User>> findAll(
@@ -72,22 +72,29 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PostMapping("/generate/password")
+    public void generateTemporaryPassword(@RequestBody UserDTO userDTO) {
+        String password = passwordService.generatePassword();
+        String email = userDTO.getEmail();
+
+        userService.saveTempPassword(password, email);
+        passwordService.sendPassword(password, email);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<User> update(
             @RequestHeader("Authorization") String bearerToken,
             @PathVariable UUID id,
             @RequestBody UserDTO userDTO
     ) {
-        if (userService.isAllowedRole(bearerToken) || userService.isCustomer(bearerToken)) {
-            if (userService.isAllowedRole(bearerToken)) {
-                User user = userService.updateUserAsAdmin(id, userDTO);
-                return ResponseEntity.ok(user);
-            } else {
-                User user = userService.updateUser(id, userDTO);
-                return ResponseEntity.ok(user);
-            }
+        if (userService.isAllowedRole(bearerToken)) {
+            User user = userService.updateUserAsAdmin(id, userDTO);
+            return ResponseEntity.ok(user);
+        } else if (userService.isCustomer(bearerToken)) {
+            User user = userService.updateUser(id, userDTO);
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

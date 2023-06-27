@@ -3,10 +3,8 @@ package application.models.users;
 import application.config.JwtService;
 import application.dtos.UserDTO;
 import application.enums.Role;
-import application.exceptions.UnauthorizedException;
 import com.zhaofujun.automapper.AutoMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +20,21 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+
+    private boolean shouldSkipFieldUpdate(Field field, Object dtoValue, Object userValue) {
+        String fieldName = field.getName();
+
+        if (fieldName.equals("role") || fieldName.equals("password")) {
+            return dtoValue == null;
+        } else if (fieldName.equals("email")) {
+            String newEmail = (String) dtoValue;
+            String currentEmail = (String) userValue;
+
+            return newEmail.equals(currentEmail);
+        }
+
+        return false;
+    }
 
     protected User createUser(UserDTO userDTO) throws Exception {
         try {
@@ -41,6 +54,7 @@ public class UserService {
         }
     }
 
+    // TODO: This is for later, when we change a User but the password does not go through the passwordEncoder.
     protected User updateUserAsAdmin(UUID id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         User updatedUser = mapper.map(userDTO, User.class);
@@ -51,7 +65,12 @@ public class UserService {
                 field.setAccessible(true);
                 Object value = field.get(updatedUser);
                 if (value != null) {
-                    field.set(user, value);
+                    if (field.getName().equals("password")) {
+                        String encodedPassword = passwordEncoder.encode((String) value);
+                        field.set(user, encodedPassword);
+                    } else {
+                        field.set(user, value);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 System.out.println("User not found with id: " + id);
@@ -61,61 +80,41 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // TODO: This is for later, when we change a User but the passwor does not go through the passwordEncoder.
-//    protected User updateUserAsAdmin(UUID id, UserDTO userDTO) {
-//        User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-//        User updatedUser = mapper.map(userDTO, User.class);
-//        Field[] fields = User.class.getDeclaredFields();
-//
-//        for (Field field : fields) {
-//            try {
-//                field.setAccessible(true);
-//                Object value = field.get(updatedUser);
-//                if (value != null) {
-//                    if (field.getName().equals("password")) {
-//                        String encodedPassword = passwordEncoder.encode((String) value);
-//                        field.set(user, encodedPassword);
-//                    } else {
-//                        field.set(user, value);
-//                    }
-//                }
-//            } catch (IllegalAccessException e) {
-//                System.out.println("User not found with id: " + id);
-//            }
-//        }
-//
-//        return userRepository.save(user);
-//    }
-
+    // TODO: Refactor code, so that I am not changing the modifiers of the variables in the User class.
     protected User updateUser(UUID id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        User updatedUser = mapper.map(userDTO, User.class);
-        Field[] fields = User.class.getDeclaredFields();
+        User alreadySavedUser = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        User incomingUser = mapper.map(userDTO, User.class);
 
-        for (Field field : fields) {
+        for (Field field : User.class.getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                Object dtoValue = field.get(updatedUser);
-                if (field.getName().equals("role")) {
-                    throw new UnauthorizedException("You are not allowed to change your role", HttpStatus.UNAUTHORIZED);
+                Object dtoValue = field.get(incomingUser);
+                Object userValue = field.get(alreadySavedUser);
+
+                if (shouldSkipFieldUpdate(field, dtoValue, userValue)) {
+                    continue;
+                }
+
+                if (!field.getName().equals("id")) {
+                    field.set(alreadySavedUser, dtoValue);
                 }
             } catch (IllegalAccessException e) {
                 System.out.println("User not found with id: " + id);
             }
         }
 
-        return userRepository.save(user);
+        return userRepository.save(alreadySavedUser);
     }
 
-    public List<User> findAll() {
+    protected List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public User findById(UUID id) {
+    protected User findById(UUID id) {
         return userRepository.findById(id).get();
     }
 
-    public boolean isEmailPresent(String email) {
+    protected boolean isEmailPresent(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
@@ -124,6 +123,12 @@ public class UserService {
         String email = jwtService.extractUsername(token);
 
         return userRepository.findByEmail(email).get();
+    }
+
+    protected void saveTempPassword(String password, String email) {
+        UUID userId = userRepository.findByEmail(email).get().getId();
+
+        userRepository.updatePassword(userId, password);
     }
 
     public boolean isAllowedRole(String bearerToken) {
