@@ -1,7 +1,5 @@
-package application.models.orders;
+package application.models.password_reset;
 
-import application.enums.OrderStatus;
-import application.models.products.Product;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -11,32 +9,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data
-@Entity
 @Builder
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "orders")
-public class Order implements Serializable {
+@Table(name = "password_reset")
+public class PasswordReset {
+
+    public static final int EXPIRATION = 60 * 24;
 
     @Id
-    @GeneratedValue
+    @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
+    @Column(name = "token")
+    private String token;
 
     @Column(name = "user_id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private UUID userId;
 
-    private Date date;
-
-    private OrderStatus orderStatus;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Product> products;
+    private Date expiryDate;
 }

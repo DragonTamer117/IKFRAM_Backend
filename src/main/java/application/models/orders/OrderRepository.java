@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Query("SELECT o FROM Order o WHERE o.userId = :userId")
-    List<Order> findAllByUserId(@Param("userId") String userId);
+    List<Order> findAllByUserId(@Param("userId") UUID userId);
+
+    @Override
+    Optional<Order> findById(UUID uuid);
 }
